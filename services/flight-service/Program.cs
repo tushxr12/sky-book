@@ -63,18 +63,26 @@ app.MapGet("/flights/{id}", async (int id, FlightDbContext db) =>
     return Results.Ok(flight);
 });
 
-app.MapPut("/flights/{id}/reserve", async (int id, int seatsToReserve, FlightDbContext db) =>
+
+
+app.MapPut("/flights/{id}/reserve", async (int id, SeatReservationRequest request, FlightDbContext db) =>
 {
     var flight = await db.Flights.FindAsync(id);
-    if (flight == null) return Results.NotFound();
+    if (flight == null) 
+        return Results.NotFound($"Flight with id {id} not found.");
 
-    if (flight.AvailableSeats < seatsToReserve)
+    if (flight.AvailableSeats < request.SeatsToReserve)
         return Results.BadRequest("Not enough available seats.");
 
-    flight.AvailableSeats -= seatsToReserve;
+    flight.AvailableSeats -= request.SeatsToReserve;
     await db.SaveChangesAsync();
 
-    return Results.Ok(flight);
+    return Results.Ok($"Reserved {request.SeatsToReserve} seat(s) on flight {id}.");
 });
 
 app.Run();
+
+public class SeatReservationRequest
+{
+    public int SeatsToReserve { get; set; }
+}
