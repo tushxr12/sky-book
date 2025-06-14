@@ -28,4 +28,9 @@ app.MapPost("/bookings", async(Booking booking) =>
     return Results.Created($"/bookings/{booking.Id}", booking);
 });
 
+app.MapGet("/bookings" , ()=>
+{
+    return Results.Ok(bookings);
+});
+
 app.Run();
