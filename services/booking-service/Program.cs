@@ -67,5 +67,20 @@ app.MapGet("/bookings/{id}", async(int id, BookingDbContext db)=>
     return booking is not null ? Results.Ok(booking) : Results.NotFound(new { message = $"No booking found with ID {id}" }); 
 });
 
+app.MapDelete("/bookings/{id}" , async(int id, BookingDbContext db) => 
+{
+    var booking = await db.Bookings.FindAsync(id);
+
+    if(booking is null)
+    {
+        return Results.NotFound(new {message = $"No booking found with ID {id}"});
+    }
+
+    db.Bookings.Remove(booking);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new {message = $"Booking with ID {id} has been deleted."});
+});
+
 
 app.Run();
