@@ -61,5 +61,11 @@ app.MapPost("/bookings", async(Booking booking, BookingDbContext db) =>
 app.MapGet("/bookings" , async(BookingDbContext db)=>
     await db.Bookings.ToListAsync());
 
+app.MapGet("/bookings/{id}", async(int id, BookingDbContext db)=>
+{
+    var booking = await db.Bookings.FindAsync(id);
+    return booking is not null ? Results.Ok(booking) : Results.NotFound(new { message = $"No booking found with ID {id}" }); 
+});
+
 
 app.Run();
