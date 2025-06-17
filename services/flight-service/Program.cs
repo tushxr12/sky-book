@@ -2,7 +2,21 @@ using flight_service.Data;
 using Microsoft.EntityFrameworkCore;
 using flight_service.Models;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options => 
+{
+    options.AddPolicy("AllowFrontend",
+    policy => 
+    {
+        policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+    });
+});
 
 // Use in-memory DB for now
 builder.Services.AddDbContext<FlightDbContext>(options =>
@@ -16,6 +30,8 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
+
 
 // Seed data
 using (var scope = app.Services.CreateScope())
