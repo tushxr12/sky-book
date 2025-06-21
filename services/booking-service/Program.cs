@@ -2,14 +2,27 @@ using booking_service.Models;
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options => 
+{
+    options.AddPolicy("AllowFrontend",
+    policy => 
+    {
+        policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
+    });
+});
 
 // Add EF Core with SQLite
 builder.Services.AddDbContext<BookingDbContext>(options =>
     options.UseSqlite("Data Source=bookings.db"));
 
 var app = builder.Build();
+app.UseCors("AllowFrontend");
 
 // Run EF migrations (create DB file if it doesn't exist)
 using (var scope = app.Services.CreateScope())
