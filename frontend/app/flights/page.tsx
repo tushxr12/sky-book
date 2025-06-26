@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from "@/components/ui/button";
-
+import { useRouter } from 'next/navigation';
 
 interface Flight {
   id: number;
@@ -20,6 +20,8 @@ export default function FlightsPage() {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const router = useRouter();
+
 
   useEffect(() => {
     fetch('http://localhost:5290/flights')
@@ -65,7 +67,7 @@ export default function FlightsPage() {
               <div className="p-4 pt-0">
                 <Button
                   className="w-full"
-                  onClick={() => console.log("Book flight:", flight)}
+                  onClick={() => router.push(`/bookings/new?flightId=${flight.id}`)}
                 >
                   Book Now
                 </Button>
