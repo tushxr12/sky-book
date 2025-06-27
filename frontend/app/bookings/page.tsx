@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 interface Booking {
   id: number;
@@ -81,7 +83,33 @@ export default function BookingsPage() {
                     {new Date(booking.bookingTime).toLocaleString()}
                   </p>
                 </CardContent>
+                <div className="p-4 pt-0">
+                  <Button
+                    variant="destructive"
+                    className="w-full mt-2"
+                    onClick={async () => {
+                      const confirmed = window.confirm(
+                        `Are you sure you want to cancel Booking #${booking.id}?`
+                      );
+                      if (!confirmed) return;
 
+                      const res = await fetch(`http://localhost:5006/bookings/${booking.id}`, {
+                        method: 'DELETE',
+                      });
+
+                      if (res.ok) {
+                        toast.success(`🗑️ Booking #${booking.id} cancelled`);
+                        setBookings((prev) => prev.filter((b) => b.id !== booking.id));
+                      } else {
+                        toast.error(`❌ Failed to cancel booking #${booking.id}`);
+                      }
+                    }}
+                  >
+                    Cancel Booking
+                  </Button>
+
+
+                </div>
 
               </Card>
             );
