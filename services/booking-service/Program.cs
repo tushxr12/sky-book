@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,7 @@ using (var scope = app.Services.CreateScope())
 
 
 // int nextId = 1;
+var bookings = new List<Booking>();
 
 string flightServiceBaseUrl = "http://localhost:5290";
 
@@ -80,20 +82,36 @@ app.MapGet("/bookings/{id}", async(int id, BookingDbContext db)=>
     return booking is not null ? Results.Ok(booking) : Results.NotFound(new { message = $"No booking found with ID {id}" }); 
 });
 
-app.MapDelete("/bookings/{id}" , async(int id, BookingDbContext db) => 
+app.MapDelete("/bookings/{id}", async (int id, BookingDbContext db) =>
 {
     var booking = await db.Bookings.FindAsync(id);
-
-    if(booking is null)
+    if (booking == null)
     {
-        return Results.NotFound(new {message = $"No booking found with ID {id}"});
+        Console.WriteLine($"❌ Booking #{id} not found");
+        return Results.NotFound(new { errorMessage = $"No booking with id {id} exists." });
+    }
+
+    Console.WriteLine($"➡️ Cancelling Booking #{id}: Flight={booking.FlightId}, Seats={booking.SeatsReserved}");
+
+    // Restore seats in flight-service
+    var httpClient = new HttpClient();
+    var releaseUrl = $"http://localhost:5290/flights/{booking.FlightId}/release";
+
+    var payload = new StringContent(booking.SeatsReserved.ToString(), Encoding.UTF8, "application/json");
+    var response = await httpClient.PutAsync(releaseUrl, payload);
+    var content = await response.Content.ReadAsStringAsync();
+
+    if (!response.IsSuccessStatusCode)
+    {
+        Console.WriteLine($"❌ Failed to release seats: {content}");
+        return Results.BadRequest($"Failed to release seats. Reason: {content}");
     }
 
     db.Bookings.Remove(booking);
     await db.SaveChangesAsync();
 
-    return Results.Ok(new {message = $"Booking with ID {id} has been deleted."});
+    Console.WriteLine($"✅ Booking #{id} cancelled and seats released.");
+    return Results.Ok(new { message = $"Booking {id} cancelled successfully." });
 });
-
 
 app.Run();

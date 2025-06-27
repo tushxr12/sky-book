@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -157,6 +159,22 @@ app.MapDelete("/flights/{id}", async (int id, FlightDbContext db) =>
     await db.SaveChangesAsync();
 
     return Results.Ok(new { message = $"Flight with ID {id} has been deleted." });
+});
+
+app.MapPut("/flights/{id}/release", async (int id, [FromBody] int seatsToRelease, FlightDbContext db) =>
+{
+    var flight = await db.Flights.FindAsync(id);
+    if (flight == null)
+        return Results.NotFound(new { error = $"No flight found with id {id}" });
+
+    flight.AvailableSeats += seatsToRelease;
+
+    // Prevent exceeding total seats
+    if (flight.AvailableSeats > flight.TotalSeats)
+        flight.AvailableSeats = flight.TotalSeats;
+
+    await db.SaveChangesAsync();
+    return Results.Ok(flight);
 });
 
 app.Run();
