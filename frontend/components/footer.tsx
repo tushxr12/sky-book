@@ -8,9 +8,11 @@ export function Footer() {
     <footer className="bg-white dark:bg-gray-900 text-center text-sm text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col md:flex-row justify-between items-center gap-6 text-sm">
         <div className="text-center md:text-left">
-          <p className="font-semibold text-lg text-gray-800 dark:text-gray-100">
-            ✈️ SkyBook
-          </p>
+          <Link href={"/"}>
+            <p className="font-semibold text-lg text-gray-800 dark:text-gray-100">
+              ✈️ SkyBook
+            </p>
+          </Link>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             &copy; {new Date().getFullYear()} SkyBook. All rights reserved.
           </p>
