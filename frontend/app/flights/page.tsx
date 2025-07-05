@@ -27,7 +27,7 @@ export default function FlightsPage() {
 
   useEffect(() => {
     const flightServiceUrl = process.env.NEXT_PUBLIC_FLIGHT_SERVICE_URL;
-    
+
     if (!flightServiceUrl) {
       setError('Flight service URL is not defined in env variables');
       setLoading(false);
@@ -68,12 +68,36 @@ export default function FlightsPage() {
                   ✈️ {flight.origin} → {flight.destination}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-sm space-y-1">
-                <p><strong>Departure:</strong> {new Date(flight.departureTime).toLocaleString()}</p>
-                <p><strong>Arrival:</strong> {new Date(flight.arrivalTime).toLocaleString()}</p>
-                <p><strong>Total Seats:</strong> {flight.totalSeats}</p>
-                <p><strong>Available:</strong> {flight.availableSeats}</p>
+              <CardContent className="text-sm">
+                <div className="grid grid-cols-2 gap-y-1">
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">Departure:</span>
+                  <span>{new Date(flight.departureTime).toLocaleString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                  })}</span>
+
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">Arrival:</span>
+                  <span>{new Date(flight.arrivalTime).toLocaleString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                  })}</span>
+
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">Total Seats:</span>
+                  <span>{flight.totalSeats}</span>
+
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">Available:</span>
+                  <span>{flight.availableSeats}</span>
+                </div>
               </CardContent>
+
               <div className="p-4 pt-0">
                 <Button
                   className="w-full cursor-pointer"
