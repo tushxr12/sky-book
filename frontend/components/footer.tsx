@@ -26,7 +26,7 @@ export function Footer() {
             Bookings
           </Link>
           <a
-            href="https://github.com"
+            href="https://github.com/tushxr12"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-blue-600 dark:hover:text-blue-400"
