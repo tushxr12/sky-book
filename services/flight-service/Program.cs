@@ -12,6 +12,7 @@ var config = builder.Configuration;
 
 // ✅ Read config values
 var frontendBaseUrl = config["FrontendBaseUrl"] ?? "http://localhost:3000";
+Console.WriteLine($"FrontendBaseUrl in use: {frontendBaseUrl}");
 var useInMemoryDb = bool.TryParse(config["UseInMemoryDatabase"], out var inMemoryDbEnabled) && inMemoryDbEnabled;
 
 // ✅ Configure CORS
