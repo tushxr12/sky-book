@@ -108,4 +108,15 @@ app.MapDelete("/bookings/{id}", async (int id, BookingDbContext db) =>
     return Results.Ok(new { message = $"Booking {id} cancelled successfully." });
 });
 
+// Ensure DB is created on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<BookingDbContext>();
+    db.Database.EnsureCreated();
+}
+
+// Configure port (required for platforms like Render)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10001";
+app.Urls.Add($"http://*:{port}");
+
 app.Run();
