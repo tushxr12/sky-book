@@ -165,6 +165,9 @@ app.MapDelete("/flights/{id}", async (int id, FlightDbContext db) =>
     return Results.Ok(new { message = $"Flight with ID {id} has been deleted." });
 });
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+
+app.Urls.Add($"http://*:{port}");
 app.Run();
 
 // ✅ Request DTO
