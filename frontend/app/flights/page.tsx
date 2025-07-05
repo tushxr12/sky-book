@@ -16,6 +16,8 @@ interface Flight {
   availableSeats: number;
 }
 
+
+
 export default function FlightsPage() {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +26,15 @@ export default function FlightsPage() {
 
 
   useEffect(() => {
-    fetch('http://localhost:5290/flights')
+    const flightServiceUrl = process.env.NEXT_PUBLIC_FLIGHT_SERVICE_URL;
+    
+    if (!flightServiceUrl) {
+      setError('Flight service URL is not defined in env variables');
+      setLoading(false);
+      return;
+    }
+
+    fetch(flightServiceUrl)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch flights');
         return res.json();
@@ -40,7 +50,7 @@ export default function FlightsPage() {
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold mb-6 text-center mt-10">Available Flights</h1>
 
       {loading ? (
@@ -66,7 +76,7 @@ export default function FlightsPage() {
               </CardContent>
               <div className="p-4 pt-0">
                 <Button
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   onClick={() => router.push(`/bookings/new?flightId=${flight.id}`)}
                 >
                   Book Now

@@ -24,7 +24,15 @@ export default function NewBookingPage() {
         setSubmitting(true);
         setError('');
 
-        const response = await fetch('http://localhost:5006/bookings', {
+        const bookingServiceUrl = process.env.NEXT_PUBLIC_BOOKING_SERVICE_URL;
+
+        if (!bookingServiceUrl) {
+            setError('Flight service URL is not defined in env variables');
+            setSubmitting(false);
+            return;
+        }
+
+        const response = await fetch(bookingServiceUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -56,7 +64,7 @@ export default function NewBookingPage() {
     };
 
     return (
-        <div className="max-w-md mx-auto mt-8 space-y-6">
+        <div className="max-w-md mx-auto py-5 mt-8 space-y-6">
             <h2 className="text-2xl font-semibold text-center">Book Your Flight</h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -97,7 +105,7 @@ export default function NewBookingPage() {
                     {submitting ? 'Booking...' : 'Confirm Booking'}
                 </Button>
 
-                {error && <p className="text-sm text-red-500 whitespace-pre-line">{error}</p>}
+                {/* {error && <p className="text-sm text-red-500 whitespace-pre-line">{error}</p>} */}
 
             </form>
         </div>

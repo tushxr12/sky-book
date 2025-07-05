@@ -24,11 +24,21 @@ export default function BookingsPage() {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const bookingServiceUrl = process.env.NEXT_PUBLIC_BOOKING_SERVICE_URL;
+
 
   useEffect(() => {
+    const flightServiceUrl = process.env.NEXT_PUBLIC_FLIGHT_SERVICE_URL;
+
+    if (!flightServiceUrl || !bookingServiceUrl) {
+      setError('Required service URLs are not defined in environment variables');
+      setLoading(false);
+      return;
+    }
+
     Promise.all([
-      fetch('http://localhost:5006/bookings').then((res) => res.json()),
-      fetch('http://localhost:5290/flights').then((res) => res.json())
+      fetch(bookingServiceUrl).then((res) => res.json()),
+      fetch(flightServiceUrl).then((res) => res.json())
     ])
       .then(([bookingsData, flightsData]) => {
         setBookings(bookingsData);
@@ -46,7 +56,7 @@ export default function BookingsPage() {
     flights.find((f) => f.id === flightId);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-5xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold my-8 text-center">📋 All Bookings</h1>
 
       {loading ? (
@@ -93,7 +103,7 @@ export default function BookingsPage() {
                       );
                       if (!confirmed) return;
 
-                      const res = await fetch(`http://localhost:5006/bookings/${booking.id}`, {
+                      const res = await fetch(`${bookingServiceUrl}/${booking.id}`, {
                         method: 'DELETE',
                       });
 
