@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,11 +11,21 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 export default function NewBookingPage() {
+    // const searchParams = useSearchParams();
+    // const flightIdFromQuery = searchParams.get('flightId');
+    // const [flightId, setFlightId] = useState(flightIdFromQuery || '');
+
     const searchParams = useSearchParams();
     const router = useRouter();
-    const flightIdFromQuery = searchParams.get('flightId');
+    const [flightId, setFlightId] = useState('');
 
-    const [flightId, setFlightId] = useState(flightIdFromQuery || '');
+    useEffect(() => {
+        const flightIdFromQuery = searchParams.get('flightId');
+        if (flightIdFromQuery) {
+            setFlightId(flightIdFromQuery);
+        }
+    }, [searchParams]);
+
     const [passengerName, setPassengerName] = useState('');
     const [seatsToReserve, setSeatsToReserve] = useState(1);
     const [submitting, setSubmitting] = useState(false);
